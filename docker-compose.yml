@@ -1,0 +1,13 @@
+services:
+  maintenance:
+    container_name: maintenance
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/maintenance
+    networks:
+      - default
+    tty: true
+volumes:
+  maintenance:

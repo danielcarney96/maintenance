@@ -1,0 +1,6 @@
+githubtest:
+  url: https://github.com
+  php: 8.0
+bitbuckettest:
+  url: https://bitbucket.com
+  php: 7.4
