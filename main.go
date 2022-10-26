@@ -7,30 +7,15 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/danielcarney96/maintenance/config"
+	"github.com/danielcarney96/maintenance/requirement"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
-	"gopkg.in/yaml.v3"
 )
 
-type Repo struct {
-	Url string
-	Php string
-}
-
 func main() {
-	data, err := ioutil.ReadFile("repositories.yml")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m := make(map[string]Repo)
-
-	err = yaml.Unmarshal([]byte(data), &m)
-	if err != nil {
-		log.Fatal(err)
-	}
+	contents := config.ReadRepositoriesFromFile("repositories.yml")
 
 	ctx := context.Background()
 
@@ -38,28 +23,29 @@ func main() {
 
 	var commands []string
 
-	commands = append(commands, "apt-get")
-	commands = append(commands, "install")
-	for _, data := range m {
-		commands = append(commands, fmt.Sprintf("php%s", data.Php))
-		commands = append(commands, fmt.Sprintf("php%s-fpm", data.Php))
-		commands = append(commands, fmt.Sprintf("php%s-cli", data.Php))
+	for _, data := range contents {
+		for _, req := range data.Requirements {
+			if req.Key == "php" {
+				commands = append(commands, requirement.PhpAdapter(req)...)
+
+				response, err := exec(ctx, container.ID, commands)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				result, err := inspectExecResp(ctx, response.ID)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fmt.Printf(result.StdOut)
+
+				commands = nil
+			}
+		}
 	}
-	commands = append(commands, "-y")
-
-	response, err := exec(ctx, container.ID, commands)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	result, err := inspectExecResp(ctx, response.ID)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf(result.StdOut)
 }
 
 func docker() types.Container {
