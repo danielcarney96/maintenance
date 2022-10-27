@@ -24,12 +24,12 @@ func ReadRepositoriesFromFile(filename string) map[string]Repo {
 		log.Fatal(err)
 	}
 
-	m := make(map[string]Repo)
+	repoData := make(map[string]Repo)
 
-	err = yaml.Unmarshal([]byte(data), &m)
+	err = yaml.Unmarshal([]byte(data), &repoData)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return m
+	return repoData
 }
