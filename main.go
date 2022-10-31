@@ -25,25 +25,34 @@ func main() {
 
 	for _, data := range contents {
 		for _, req := range data.Requirements {
-			if req.Key == "php" {
-				commands = append(commands, requirement.PhpAdapter(req)...)
+			var adapter requirement.Adapter
 
-				response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				result, err := docker.InspectCommandExecResponse(ctx, response.ID)
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fmt.Printf(result.StdOut)
-
-				commands = nil
+			switch req.Key {
+			case "php":
+				adapter = requirement.MakePhpAdapter(req)
+			// case "node":
+			// 	adapter = requirement.MakeNodeAdapter(req)
+			default:
+				continue
 			}
+
+			commands = append(commands, requirement.ToCommandArray(adapter.InstallCommand)...)
+
+			response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			result, err := docker.InspectCommandExecResponse(ctx, response.ID)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf(result.StdOut)
+
+			commands = nil
 		}
 	}
 }
