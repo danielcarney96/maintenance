@@ -4,11 +4,11 @@ githubtest:
     - key: php
       version: 8.0
     - key: node
-      version: 12.0
+      version: 16
 bitbuckettest:
   url: https://bitbucket.com
   requirements:
     - key: php
       version: 7.4
     - key: node
-      version: 12.0
+      version: 14

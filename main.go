@@ -30,13 +30,13 @@ func main() {
 			switch req.Key {
 			case "php":
 				adapter = requirement.MakePhpAdapter(req)
-			// case "node":
-			// 	adapter = requirement.MakeNodeAdapter(req)
+			case "node":
+				adapter = requirement.MakeNodeAdapter(req)
 			default:
 				continue
 			}
 
-			commands = append(commands, requirement.ToCommandArray(adapter.InstallCommand)...)
+			commands = append(commands, adapter.InstallCommands...)
 
 			response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
 
