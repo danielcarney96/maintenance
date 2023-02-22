@@ -7,8 +7,8 @@ import (
 )
 
 type Adapter struct {
-	InstallCommands      []string
-	SwitchVersionCommand string
+	InstallCommands       []string
+	SwitchVersionCommands []string
 }
 
 func MakePhpAdapter(req config.Requirement) Adapter {
@@ -20,7 +20,12 @@ func MakePhpAdapter(req config.Requirement) Adapter {
 			fmt.Sprintf("php%s-cli", req.Version),
 			"-y",
 		},
-		SwitchVersionCommand: fmt.Sprintf("update-alternatives --config php -%s", req.Version),
+		SwitchVersionCommands: []string{
+			"update-alternatives",
+			"--config",
+			"php",
+			fmt.Sprintf("-%s", req.Version),
+		},
 	}
 }
 
@@ -31,6 +36,10 @@ func MakeNodeAdapter(req config.Requirement) Adapter {
 			"-c",
 			fmt.Sprintf("PS1=x; . ~/.bashrc; nvm install v%s", req.Version),
 		},
-		SwitchVersionCommand: fmt.Sprintf(`bash -c "PS1=x; . ~/.bashrc; nvm use v%s"`, req.Version),
+		SwitchVersionCommands: []string{
+			"bash",
+			"-c",
+			fmt.Sprintf("PS1=x; . ~/.bashrc; nvm use v%s", req.Version),
+		},
 	}
 }
