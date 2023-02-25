@@ -9,5 +9,10 @@ services:
     networks:
       - default
     tty: true
+    secrets:
+      - id_rsa
 volumes:
   maintenance:
+secrets:
+  id_rsa:
+    file: ${SSH_KEY}

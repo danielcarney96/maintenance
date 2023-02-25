@@ -9,9 +9,8 @@ RUN apt install php-cli unzip curl nano -y
 
 # SSH
 RUN mkdir /root/.ssh/
-COPY id_rsa /root/.ssh
-RUN chmod 600 /root/.ssh/id_rsa
-RUN touch /root/.ssh/known_hosts
+RUN ln -s /run/secrets/id_rsa /root/.ssh/id_rsa
+RUN echo "Host *.trabe.io\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 RUN ssh-keyscan bitbucket.org >> /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
