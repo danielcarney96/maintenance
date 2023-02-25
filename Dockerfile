@@ -14,6 +14,8 @@ RUN echo "Host *.trabe.io\n\tStrictHostKeyChecking no\n" >> /root/.ssh/config
 RUN ssh-keyscan bitbucket.org >> /root/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
 
+RUN mkdir repositories
+
 # Node
 RUN DEBIAN_FRONTEND='noninteractive' apt install nodejs npm -y
 RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash 

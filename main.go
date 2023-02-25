@@ -27,7 +27,7 @@ func main() {
 		commands = []string{
 			"bash",
 			"-c",
-			fmt.Sprintf("git clone %s", data.Url),
+			fmt.Sprintf("git -C repositories clone %s", data.Url),
 		}
 
 		response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
