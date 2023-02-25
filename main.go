@@ -24,6 +24,28 @@ func main() {
 	var commands []string
 
 	for _, data := range contents {
+		commands = []string{
+			"bash",
+			"-c",
+			fmt.Sprintf("git clone %s", data.Url),
+		}
+
+		response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		result, err := docker.InspectCommandExecResponse(ctx, response.ID)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf(result.StdOut)
+
+		commands = nil
+
 		for _, req := range data.Requirements {
 			var adapter requirement.Adapter
 
