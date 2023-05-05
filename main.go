@@ -22,9 +22,8 @@ func main() {
 	}
 
 	for _, data := range contents {
-		command := fmt.Sprintf("git -C repositories clone %s", data.Url)
-
-		result := docker.RunCommandAndOutput(ctx, container.ID, command)
+		commands := []string{"git", "-C", "repositories", "clone", data.Url}
+		result := docker.RunCommandAndOutput(ctx, container.ID, commands)
 		fmt.Printf(result.StdOut)
 
 		for _, req := range data.Requirements {
@@ -39,7 +38,7 @@ func main() {
 				continue
 			}
 
-			result = docker.RunCommandAndOutput(ctx, container.ID, adapter.InstallCommand)
+			result = docker.RunCommandAndOutput(ctx, container.ID, adapter.InstallCommands)
 			fmt.Printf(result.StdOut)
 		}
 	}
@@ -47,6 +46,10 @@ func main() {
 	directories := docker.ListDirectoriesInContainer(ctx, container.ID, "/repositories")
 
 	for _, dir := range directories {
-		fmt.Println(dir)
+		commands := []string{"sh", "-c", fmt.Sprintf("cd %q && composer update", dir)}
+
+		result := docker.RunCommandAndOutput(ctx, container.ID, commands)
+
+		fmt.Printf(result.StdOut)
 	}
 }

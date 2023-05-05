@@ -19,8 +19,8 @@ type ExecResult struct {
 	ExitCode int
 }
 
-func RunCommandAndOutput(ctx context.Context, containerID string, command string) ExecResult {
-	response, err := ExecuteCommandInContainer(ctx, containerID, command)
+func RunCommandAndOutput(ctx context.Context, containerID string, commands []string) ExecResult {
+	response, err := ExecuteCommandInContainer(ctx, containerID, commands)
 
 	if err != nil {
 		log.Fatal(err)
@@ -36,14 +36,14 @@ func RunCommandAndOutput(ctx context.Context, containerID string, command string
 }
 
 func ListDirectoriesInContainer(ctx context.Context, containerID string, path string) []string {
-	command := fmt.Sprintf("find %s -mindepth 1 -maxdepth 1 -type d", path)
+	commands := []string{"find", path, "-mindepth", "1", "-maxdepth", "1", "-type", "d"}
 
-	result := RunCommandAndOutput(ctx, containerID, command)
+	result := RunCommandAndOutput(ctx, containerID, commands)
 
 	return strings.Split(strings.TrimSpace(result.StdOut), "\n")
 }
 
-func ExecuteCommandInContainer(ctx context.Context, containerID string, command string) (types.IDResponse, error) {
+func ExecuteCommandInContainer(ctx context.Context, containerID string, commands []string) (types.IDResponse, error) {
 	docker, err := client.NewClientWithOpts()
 	if err != nil {
 		return types.IDResponse{}, err
@@ -52,7 +52,7 @@ func ExecuteCommandInContainer(ctx context.Context, containerID string, command 
 	return docker.ContainerExecCreate(ctx, containerID, types.ExecConfig{
 		AttachStderr: true,
 		AttachStdout: true,
-		Cmd:          strings.Fields(command),
+		Cmd:          commands,
 	})
 }
 
