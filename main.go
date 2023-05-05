@@ -30,19 +30,7 @@ func main() {
 			fmt.Sprintf("git -C repositories clone %s", data.Url),
 		}
 
-		response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		result, err := docker.InspectCommandExecResponse(ctx, response.ID)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Printf(result.StdOut)
+		docker.RunCommandAndOutput(ctx, container.ID, commands)
 
 		commands = nil
 
@@ -60,19 +48,7 @@ func main() {
 
 			commands = append(commands, adapter.InstallCommands...)
 
-			response, err := docker.ExecuteCommandInContainer(ctx, container.ID, commands)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			result, err := docker.InspectCommandExecResponse(ctx, response.ID)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmt.Printf(result.StdOut)
+			docker.RunCommandAndOutput(ctx, container.ID, commands)
 
 			commands = nil
 		}

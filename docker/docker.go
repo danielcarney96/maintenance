@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -15,6 +16,22 @@ type ExecResult struct {
 	StdOut   string
 	StdErr   string
 	ExitCode int
+}
+
+func RunCommandAndOutput(ctx context.Context, containerID string, command []string) {
+	response, err := ExecuteCommandInContainer(ctx, containerID, command)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	result, err := InspectCommandExecResponse(ctx, response.ID)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf(result.StdOut)
 }
 
 func ExecuteCommandInContainer(ctx context.Context, containerID string, command []string) (types.IDResponse, error) {
