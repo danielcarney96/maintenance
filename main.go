@@ -21,18 +21,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var commands []string
-
 	for _, data := range contents {
-		commands = []string{
-			"bash",
-			"-c",
-			fmt.Sprintf("git -C repositories clone %s", data.Url),
-		}
+		command := fmt.Sprintf("git -C repositories clone %s", data.Url)
 
-		docker.RunCommandAndOutput(ctx, container.ID, commands)
-
-		commands = nil
+		result := docker.RunCommandAndOutput(ctx, container.ID, command)
+		fmt.Printf(result.StdOut)
 
 		for _, req := range data.Requirements {
 			var adapter requirement.Adapter
@@ -46,11 +39,14 @@ func main() {
 				continue
 			}
 
-			commands = append(commands, adapter.InstallCommands...)
-
-			docker.RunCommandAndOutput(ctx, container.ID, commands)
-
-			commands = nil
+			result = docker.RunCommandAndOutput(ctx, container.ID, adapter.InstallCommand)
+			fmt.Printf(result.StdOut)
 		}
+	}
+
+	directories := docker.ListDirectoriesInContainer(ctx, container.ID, "/repositories")
+
+	for _, dir := range directories {
+		fmt.Println(dir)
 	}
 }
