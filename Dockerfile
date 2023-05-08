@@ -5,7 +5,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 RUN apt-get update -y -q
 RUN apt-get install dialog apt-utils git openssh-client software-properties-common -y
 RUN add-apt-repository ppa:ondrej/php
-RUN apt install php-cli unzip curl nano -y
+RUN apt install php-cli unzip curl nano gh -y
 
 # SSH
 RUN mkdir /root/.ssh/
@@ -23,3 +23,7 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | ba
 # Composer
 RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+
+# Configure git
+# TODO - set git config name and email
+# TODO - login to gh cli

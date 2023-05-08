@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	"github.com/danielcarney96/maintenance/config"
 	"github.com/danielcarney96/maintenance/docker"
+	"github.com/danielcarney96/maintenance/repositories"
 	"github.com/danielcarney96/maintenance/requirement"
 )
 
@@ -47,9 +50,12 @@ func main() {
 
 	for _, dir := range directories {
 		commands := []string{"sh", "-c", fmt.Sprintf("cd %q && composer update", dir)}
-
 		result := docker.RunCommandAndOutput(ctx, container.ID, commands)
-
 		fmt.Printf(result.StdOut)
+
+		branchName := fmt.Sprintf("maintenance/%s-%d", strings.ToLower(time.Now().Month().String()), time.Now().Year())
+
+		repositories.BranchAndCommit(ctx, container.ID, dir, branchName, "update composer libraries")
+		repositories.PushAndPR(ctx, container.ID, dir, branchName, fmt.Sprintf("Maintenance/%s %d", time.Now().Month().String(), time.Now().Year()), "test")
 	}
 }
