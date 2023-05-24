@@ -34,5 +34,4 @@ func PushAndPR(ctx context.Context, containerID string, repoDir string, branchNa
 	commands = []string{"sh", "-c", fmt.Sprintf(`cd %q && gh pr create --title "%s" --body "%s"`, repoDir, prTitle, prBody)}
 	result = docker.RunCommandAndOutput(ctx, containerID, commands)
 	fmt.Printf(result.StdOut)
-	fmt.Printf(result.StdErr)
 }

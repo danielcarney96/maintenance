@@ -1,5 +1,9 @@
 FROM ubuntu:latest
 
+ARG GH_EMAIL
+ARG GH_NAME
+ARG GH_AUTH_TOKEN
+
 # Dependencies
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update -y -q
@@ -25,5 +29,6 @@ RUN curl -sS https://getcomposer.org/installer -o /tmp/composer-setup.php
 RUN php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 # Configure git
-# TODO - set git config name and email
-# TODO - login to gh cli
+RUN git config --global user.email $GH_EMAIL
+RUN git config --global user.name $GH_NAME
+RUN echo $GH_AUTH_TOKEN | gh auth login --with-token

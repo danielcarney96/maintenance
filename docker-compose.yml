@@ -1,9 +1,15 @@
+version: '3.9'
+
 services:
   maintenance:
     container_name: maintenance
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        GH_EMAIL: ${GH_EMAIL}
+        GH_NAME: ${GH_NAME}
+        GH_AUTH_TOKEN: ${GH_TOKEN}
     volumes:
       - ./:/maintenance
     networks:
